@@ -5,13 +5,13 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 public class SingletonSessionFactory {
-    static private SessionFactory sessionFactory;
+    private static SessionFactory sessionFactory;
 
     private SingletonSessionFactory() {
     }
 
-    static public SessionFactory getSessionFactory() throws HibernateException {
-        if (sessionFactory != null) {
+    public static SessionFactory getSessionFactory() throws HibernateException {
+        if (sessionFactory == null) {
             sessionFactory = new Configuration()
                     .configure()
                     .buildSessionFactory();
