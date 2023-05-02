@@ -15,7 +15,7 @@ import java.util.Set;
 @Builder
 @Entity
 @Table(name = "users")
-public class Users {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -24,12 +24,12 @@ public class Users {
     @Column(name="first_name")
     private String firstName;
 
-//    @ManyToMany(cascade = {
-//            CascadeType.MERGE
-//    })
-//    @JoinTable(
-//            name = "products_relations",
-//            joinColumns = @JoinColumn(name="user_id"),
-//            inverseJoinColumns = @JoinColumn(name="product_id"))
-//    private Set<Products> products = new HashSet<>();
+    @ManyToMany(cascade = {
+            CascadeType.MERGE
+    })
+    @JoinTable(
+            name = "product_relations",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name="product_id"))
+    private Set<Product> products = new HashSet<>();
 }

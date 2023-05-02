@@ -1,4 +1,4 @@
-package org.vgk.kholodyadya.database;
+package org.vgk.kholodyadya.repository;
 
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;

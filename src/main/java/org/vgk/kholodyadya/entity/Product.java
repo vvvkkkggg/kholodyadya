@@ -9,19 +9,13 @@ import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Set;
 
-@org.hibernate.annotations.NamedQuery(
-        name = "DeptEmployee_FindAllByDepartment",
-        query = "from Products where productName = :product_name",
-        timeout = 1,
-        fetchSize = 10
-)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
 @Table(name = "products")
-public class Products {
+public class Product {
 
     @Column(name="product_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +25,6 @@ public class Products {
     @Column(name="product_name")
     private String productName;
 
-//    @ManyToMany(mappedBy = "products")
-//    private Set<Users> users = new HashSet<>();
+    @ManyToMany(mappedBy = "products")
+    private Set<User> users = new HashSet<>();
 }
