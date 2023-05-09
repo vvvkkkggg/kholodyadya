@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">QrApp</string>
+    <string name="your_products">Press and scan!</string>
+    <string name="scan_new">Scan new !</string>
+</resources>
