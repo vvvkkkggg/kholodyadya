@@ -3,10 +3,7 @@ package org.vgk.kholodyadya.contoller;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.vgk.kholodyadya.entity.User;
 import org.vgk.kholodyadya.exceptions.InvalidQrException;
 import org.vgk.kholodyadya.exceptions.NonexistentUserIdException;
@@ -54,7 +51,12 @@ public class Controller {
         if (!isCorrect) {
             throw new InvalidQrException("qr format is invalid");
         }
+    }
 
+    @GetMapping("/products/{user_id}")
+    public String getUserProducts(@PathVariable("user_id") Long user_id) {
+        boolean isCorrect = ValidateQr.validateQr("fwfwe");
+        return "OK";
     }
 
 }

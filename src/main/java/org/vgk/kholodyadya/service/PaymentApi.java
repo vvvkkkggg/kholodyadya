@@ -1,5 +1,6 @@
 package org.vgk.kholodyadya.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ public class PaymentApi {
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
+    private final ObjectMapper mapper = new ObjectMapper();
     private String sessionId;
     private String refreshToken;
 
@@ -52,7 +54,7 @@ public class PaymentApi {
                 "code", code,
                 "os", OS
         );
-        String requestBody = new ObjectMapper().writeValueAsString(requestBodyValues);
+        String requestBody = mapper.writeValueAsString(requestBodyValues);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -74,8 +76,6 @@ public class PaymentApi {
         sessionId = jsonObject.get("sessionId").getAsString();
         refreshToken = jsonObject.get("refresh_token").getAsString();
 
-        System.out.println(sessionId);
-        System.out.println(refreshToken);
     }
 
     private void sendPhoneVerificationRequest(String phone) throws IOException, InterruptedException {
@@ -87,7 +87,7 @@ public class PaymentApi {
                 "client_secret", CLIENT_SECRET,
                 "os", OS
         );
-        String requestBody = new ObjectMapper().writeValueAsString(requestBodyValues);
+        String requestBody = mapper.writeValueAsString(requestBodyValues);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -104,7 +104,54 @@ public class PaymentApi {
         client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
+    private String getReceiptId(String qr) throws IOException, InterruptedException {
+        String url = String.format("https://%s/v2/ticket", HOST);
+        Map<String, String> requestBodyValues = Map.of(
+                "qr", qr
+        );
+        String requestBody = mapper.writeValueAsString(requestBodyValues);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .setHeader("Content-Type", "application/json")
+                .setHeader("Accept", ACCEPT)
+                .setHeader("Device-OS", DEVICE_OS)
+                .setHeader("Device-Id", DEVICE_ID)
+                .setHeader("clientVersion", CLIENT_VERSION)
+                .setHeader("Accept-Language", ACCEPT_LANGUAGE)
+                .setHeader("User-Agent", USER_AGENT)
+                .setHeader("sessionId", sessionId)
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
+
+        return jsonObject.get("id").getAsString();
+    }
+
+    private String getReceipt(String qr) throws IOException, InterruptedException {
+        String receiptId = getReceiptId(qr);
+        String url = String.format("https://%s/v2/tickets/%s", HOST, receiptId);
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .setHeader("Content-Type", "application/json")
+                .setHeader("Accept", ACCEPT)
+                .setHeader("Device-OS", DEVICE_OS)
+                .setHeader("Device-Id", DEVICE_ID)
+                .setHeader("clientVersion", CLIENT_VERSION)
+                .setHeader("Accept-Language", ACCEPT_LANGUAGE)
+                .setHeader("User-Agent", USER_AGENT)
+                .setHeader("sessionId", sessionId)
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
+        System.out.println(response.body());
+        return "";
+    }
+
     private String getPhoneNumber() {
-        return "+79115196790";
+        return "";
     }
 }
