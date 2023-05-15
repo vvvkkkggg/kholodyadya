@@ -24,7 +24,4 @@ public class Product {
 
     @Column(name="product_name")
     private String productName;
-
-    @ManyToMany(mappedBy = "products")
-    private Set<User> users = new HashSet<>();
 }

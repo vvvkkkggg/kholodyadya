@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,18 +22,13 @@ public class User {
     @Column(name="user_id")
     private int id;
 
+    @NotNull
     private String username;
+
+    @NotNull
     @Column(name="first_name")
     private String firstName;
 
+    @NotNull
     private String password;
-
-    @ManyToMany(cascade = {
-            CascadeType.MERGE
-    })
-    @JoinTable(
-            name = "product_relations",
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name="product_id"))
-    private Set<Product> products = new HashSet<>();
 }

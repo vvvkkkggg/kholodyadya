@@ -12,15 +12,18 @@ import java.util.Map;
 import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PaymentApi {
+
+    private boolean haveRelevantSessionId = false;
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
     private final ObjectMapper mapper = new ObjectMapper();
     private String sessionId;
     private String refreshToken;
-
     private final String HOST = "irkkt-mobile.nalog.ru:8888";
     private final String DEVICE_OS = "iOS";
     private final String CLIENT_VERSION = "2.9.0";
@@ -31,12 +34,7 @@ public class PaymentApi {
     private final String CLIENT_SECRET = "IyvrAbKt9h/8p6a7QPh8gpkXYQ4=";
     private final String OS = "Android";
 
-//    public static void main(String[] args) throws IOException, InterruptedException {
-//        new PaymentApi();
-//    }
-
-    public PaymentApi() throws IOException, InterruptedException {
-        getSessionId();
+    public PaymentApi() {
     }
 
     private void getSessionId() throws IOException, InterruptedException {
@@ -75,6 +73,7 @@ public class PaymentApi {
 
         sessionId = jsonObject.get("sessionId").getAsString();
         refreshToken = jsonObject.get("refresh_token").getAsString();
+        haveRelevantSessionId = true;
 
     }
 
@@ -130,7 +129,11 @@ public class PaymentApi {
         return jsonObject.get("id").getAsString();
     }
 
-    private String getReceipt(String qr) throws IOException, InterruptedException {
+    public JsonObject getReceipt(String qr) throws IOException, InterruptedException {
+        if (!haveRelevantSessionId) {
+            getSessionId();
+        }
+
         String receiptId = getReceiptId(qr);
         String url = String.format("https://%s/v2/tickets/%s", HOST, receiptId);
         HttpRequest request = HttpRequest.newBuilder()
@@ -146,9 +149,7 @@ public class PaymentApi {
                 .build();
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        JsonObject jsonObject = gson.fromJson(response.body(), JsonObject.class);
-        System.out.println(response.body());
-        return "";
+        return gson.fromJson(response.body(), JsonObject.class);
     }
 
     private String getPhoneNumber() {

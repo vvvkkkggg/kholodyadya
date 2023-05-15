@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.vgk.kholodyadya.entity.User;
+import org.vgk.kholodyadya.exceptions.UserAlreadyExistsException;
 import org.vgk.kholodyadya.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -18,12 +19,23 @@ public class UserService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User does not exist");
+    public boolean checkUserExists(int userId) {
+        return userRepository.existsUserById(userId);
+    }
+
+    public boolean checkUserExists(String username) {
+        return userRepository.existsUserByUsername(username);
+    }
+
+    public void registerUser(User user) {
+        if (checkUserExists(user.getUsername())) {
+            throw new UserAlreadyExistsException("user " + user.getUsername() + " already exists");
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
+        userRepository.save(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return null;
     }
 }
