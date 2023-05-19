@@ -1,53 +1,38 @@
 package org.vgk.kholodyadya.contoller;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.vgk.kholodyadya.entity.Product;
 import org.vgk.kholodyadya.entity.User;
 import org.vgk.kholodyadya.exceptions.InvalidQrException;
-import org.vgk.kholodyadya.exceptions.NonexistentUserIdException;
-import org.vgk.kholodyadya.repository.ProductRepository;
-import org.vgk.kholodyadya.repository.UserRepository;
 import org.vgk.kholodyadya.service.ProductService;
 import org.vgk.kholodyadya.service.UserService;
-import org.vgk.kholodyadya.service.ValidateQr;
 
 import java.util.List;
 
 @Service
 @RestController
 public class Controller {
-    private ProductService productService;
-    private UserService userService;
+    private final ProductService productService;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
 
-    public Controller(ProductService productService, UserService userService) {
+
+    public Controller(ProductService productService, UserService userService, AuthenticationManager authenticationManager) {
         this.productService = productService;
         this.userService = userService;
-    }
-
-    @Getter
-    @Setter
-    private static class UserProduct {
-        private String name;
-        private String shelfLife;
-
-    }
-
-    @Getter
-    @Setter
-    private static class UserProductsList {
-        private List<UserProduct> productsList;
-
+        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping("/products/{user_id}")
-    public void addProducts(@PathVariable("user_id") int userId, @RequestBody UserProductsList cart) {
-//        User user = userRepository.findById(user_id)
-//            .orElseThrow(() -> new NonexistentUserIdException("non existent user id passed"));
+    public void addProducts(@PathVariable("user_id") int userId, @RequestBody List<Product> cart) {
+        productService.addProductList(cart, userId);
     }
 
     @PostMapping("/products/qr/{user_id}")
@@ -58,22 +43,20 @@ public class Controller {
         } catch (InvalidQrException exception) {
             return new ResponseEntity<> ("Given Qr is invalid", HttpStatus.BAD_REQUEST);
         }
-
-//        boolean isCorrect = ValidateQr.validateQr(qr);
-//        if (!isCorrect) {
-//            throw new InvalidQrException("qr format is invalid");
-//        }
     }
 
     @GetMapping("/products/{user_id}")
-    public String getUserProducts(@PathVariable("user_id") int userId) {
-        boolean isCorrect = ValidateQr.validateQr("fwfwe");
-        return "OK";
+    public ResponseEntity<List<Product>> getUserProducts(@PathVariable("user_id") int userId) {
+        List<Product> products = productService.getUserProducts(userId);
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PostMapping("/auth/login")
     public void loginUser(@RequestBody User user) {
-        // authService.login(user.getUsername(), user.getPassword());
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+        );
+        Object obj = auth.getPrincipal();
     }
 
     @PostMapping("/auth/register")

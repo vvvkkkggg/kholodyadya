@@ -1,22 +1,23 @@
 package org.vgk.kholodyadya.service;
 
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.vgk.kholodyadya.entity.User;
 import org.vgk.kholodyadya.exceptions.UserAlreadyExistsException;
 import org.vgk.kholodyadya.repository.UserRepository;
 
-import java.util.ArrayList;
-
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public boolean checkUserExists(int userId) {
@@ -31,11 +32,7 @@ public class UserService implements UserDetailsService {
         if (checkUserExists(user.getUsername())) {
             throw new UserAlreadyExistsException("user " + user.getUsername() + " already exists");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
     }
 }

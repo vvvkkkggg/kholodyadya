@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +27,6 @@ public class User {
     @NotNull
     private String username;
 
-    @NotNull
     @Column(name="first_name")
     private String firstName;
 

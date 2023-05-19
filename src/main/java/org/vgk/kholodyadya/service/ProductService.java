@@ -3,6 +3,7 @@ package org.vgk.kholodyadya.service;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.springframework.stereotype.Service;
+import org.vgk.kholodyadya.contoller.Controller;
 import org.vgk.kholodyadya.entity.Product;
 import org.vgk.kholodyadya.entity.ProductRelation;
 import org.vgk.kholodyadya.exceptions.InvalidQrException;
@@ -12,6 +13,9 @@ import org.vgk.kholodyadya.repository.ProductRepository;
 import org.vgk.kholodyadya.repository.UserRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -30,9 +34,9 @@ public class ProductService {
     }
 
     public void addProductsWithinQr(String qr, int userId) {
-//        if (!userRepository.existsUserById(userId)) {
-//            throw new NonexistentUserIdException("user does not exist");
-//        }
+        if (!userRepository.existsUserById(userId)) {
+            throw new NonexistentUserIdException("user does not exist");
+        }
 
         boolean isCorrectQr = ValidateQr.validateQr(qr);
         if (!isCorrectQr) {
@@ -51,12 +55,30 @@ public class ProductService {
                 .getAsJsonObject("receipt")
                 .getAsJsonArray("items");
 
-        products.asList().forEach(product -> addProduct(product.getAsJsonObject().get("name").toString(), userId));
+        products.asList().forEach(product -> addProduct(
+                Product.builder().
+                        productName(product.getAsJsonObject().get("game").toString()).build(),
+                userId));
     }
 
-    public void addProduct(String productName, int userId) {
-        Product result = productRepository.save(Product.builder().productName(productName).build());
+    public void addProduct(Product product, int userId) {
+        Product result = productRepository.save(product);
         productRelationRepository.save(ProductRelation.builder().
                 relationId(new ProductRelation.ProductRelationId(result.getProductId(), userId)).build());
+    }
+
+    public List<Product> getUserProducts(int userId) {
+        List<ProductRelation> products = productRelationRepository.findAllByRelationIdUserId(userId);
+        return products.stream()
+                .map(relation -> productRepository.findByProductId(relation.getRelationId().getProductId()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+    }
+
+    public void addProductList(List<Product> productList, int userId) {
+        for (Product product : productList) {
+            addProduct(product, userId);
+        }
     }
 }
