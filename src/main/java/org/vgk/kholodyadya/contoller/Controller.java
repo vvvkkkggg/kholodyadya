@@ -1,13 +1,18 @@
 package org.vgk.kholodyadya.contoller;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.vgk.kholodyadya.config.AuthUserDetailsService;
+import org.vgk.kholodyadya.config.JwtTokenUtil;
 import org.vgk.kholodyadya.entity.Product;
 import org.vgk.kholodyadya.entity.User;
 import org.vgk.kholodyadya.exceptions.InvalidQrException;
@@ -22,12 +27,16 @@ public class Controller {
     private final ProductService productService;
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final AuthUserDetailsService userDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
 
 
-    public Controller(ProductService productService, UserService userService, AuthenticationManager authenticationManager) {
+    public Controller(ProductService productService, UserService userService, AuthenticationManager authenticationManager, AuthUserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
         this.productService = productService;
         this.userService = userService;
         this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
     @PostMapping("/products/{user_id}")
@@ -52,11 +61,22 @@ public class Controller {
     }
 
     @PostMapping("/auth/login")
-    public void loginUser(@RequestBody User user) {
-        Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
-        );
-        Object obj = auth.getPrincipal();
+    public ResponseEntity<String> loginUser(@RequestBody User user) {
+        try {
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+            );
+
+            UserDetails result = userDetailsService.loadUserByUsername(user.getUsername());
+
+            return ResponseEntity.ok()
+                    .header(
+                            HttpHeaders.AUTHORIZATION,
+                            jwtTokenUtil.generateToken(result)
+                    ).build();
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @PostMapping("/auth/register")
