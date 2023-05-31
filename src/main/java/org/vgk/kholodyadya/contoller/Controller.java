@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import org.vgk.kholodyadya.config.JwtTokenUtil;
 import org.vgk.kholodyadya.entity.Product;
 import org.vgk.kholodyadya.entity.User;
 import org.vgk.kholodyadya.exceptions.InvalidQrException;
+import org.vgk.kholodyadya.exceptions.UserAlreadyExistsException;
 import org.vgk.kholodyadya.service.ProductService;
 import org.vgk.kholodyadya.service.UserService;
 
@@ -39,14 +41,16 @@ public class Controller {
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    @PostMapping("/products/{user_id}")
-    public void addProducts(@PathVariable("user_id") int userId, @RequestBody List<Product> cart) {
+    @PostMapping("/products")
+    public void addProducts(@RequestBody List<Product> cart) {
+        int userId = userService.getAuthenticatedUserId();
         productService.addProductList(cart, userId);
     }
 
-    @PostMapping("/products/qr/{user_id}")
-    public ResponseEntity<String> addProductsWithinQr(@PathVariable("user_id") int userId, @RequestBody String qr) {
+    @PostMapping("/products/qr")
+    public ResponseEntity<String> addProductsWithinQr(@RequestBody String qr) {
         try {
+            int userId = userService.getAuthenticatedUserId();
             productService.addProductsWithinQr(qr, userId);
             return new ResponseEntity<>("Products are successfully added", HttpStatus.OK);
         } catch (InvalidQrException exception) {
@@ -54,8 +58,10 @@ public class Controller {
         }
     }
 
-    @GetMapping("/products/{user_id}")
-    public ResponseEntity<List<Product>> getUserProducts(@PathVariable("user_id") int userId) {
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getUserProducts() {
+        int userId = userService.getAuthenticatedUserId();
+
         List<Product> products = productService.getUserProducts(userId);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
@@ -80,13 +86,13 @@ public class Controller {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<String> registerUser(@Validated @RequestBody User user) {
+    public ResponseEntity<User> registerUser(@Validated @RequestBody User user) {
         try {
-            userService.registerUser(user);
-        } catch (Throwable e) {
-            return new ResponseEntity<> ("Unable to create user", HttpStatus.BAD_REQUEST);
+            User registeredUser = userService.registerUser(user);
+            return new ResponseEntity<> (registeredUser, HttpStatus.OK);
+        } catch (UserAlreadyExistsException e) {
+            return new ResponseEntity<> (User.builder().build(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<> ("Ok", HttpStatus.OK);
     }
 
 }

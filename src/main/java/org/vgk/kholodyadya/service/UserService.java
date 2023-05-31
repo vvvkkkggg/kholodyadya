@@ -1,6 +1,8 @@
 package org.vgk.kholodyadya.service;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.vgk.kholodyadya.entity.User;
@@ -28,11 +30,18 @@ public class UserService {
         return userRepository.existsUserByUsername(username);
     }
 
-    public void registerUser(User user) {
+    public User registerUser(User user) {
         if (checkUserExists(user.getUsername())) {
             throw new UserAlreadyExistsException("user " + user.getUsername() + " already exists");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        return userRepository.save(user);
+    }
+
+    public int getAuthenticatedUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+
+        return userRepository.findByUsername(currentUserName).getId();
     }
 }
