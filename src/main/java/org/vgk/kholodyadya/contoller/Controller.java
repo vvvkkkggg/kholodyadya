@@ -1,5 +1,6 @@
 package org.vgk.kholodyadya.contoller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.vgk.kholodyadya.config.JwtTokenUtil;
 import org.vgk.kholodyadya.entity.Product;
 import org.vgk.kholodyadya.entity.User;
 import org.vgk.kholodyadya.exceptions.InvalidQrException;
+import org.vgk.kholodyadya.exceptions.NonExistentProduct;
 import org.vgk.kholodyadya.exceptions.UserAlreadyExistsException;
 import org.vgk.kholodyadya.service.ProductService;
 import org.vgk.kholodyadya.service.UserService;
@@ -42,12 +44,14 @@ public class Controller {
     }
 
     @PostMapping("/products")
+    @Operation(summary = "method to add list of products to user's cart")
     public void addProducts(@RequestBody List<Product> cart) {
         int userId = userService.getAuthenticatedUserId();
         productService.addProductList(cart, userId);
     }
 
     @PostMapping("/products/qr")
+    @Operation(summary = "method to add list of products to user's cart within QR code")
     public ResponseEntity<String> addProductsWithinQr(@RequestBody String qr) {
         try {
             int userId = userService.getAuthenticatedUserId();
@@ -59,6 +63,7 @@ public class Controller {
     }
 
     @GetMapping("/products")
+    @Operation(summary = "method to get list of user's products")
     public ResponseEntity<List<Product>> getUserProducts() {
         int userId = userService.getAuthenticatedUserId();
 
@@ -66,7 +71,20 @@ public class Controller {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
+    @DeleteMapping("/products")
+    @Operation(summary = "method to delete product from cart")
+    public ResponseEntity<String> deleteProduct(@RequestBody Product product) {
+        int userId = userService.getAuthenticatedUserId();
+        try {
+            productService.deleteProduct(product, userId);
+            return ResponseEntity.ok().build();
+        } catch (NonExistentProduct e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
     @PostMapping("/auth/login")
+    @Operation(summary = "method to log in")
     public ResponseEntity<String> loginUser(@RequestBody User user) {
         try {
             Authentication auth = authenticationManager.authenticate(
@@ -86,6 +104,7 @@ public class Controller {
     }
 
     @PostMapping("/auth/register")
+    @Operation(summary = "method to register in service")
     public ResponseEntity<User> registerUser(@Validated @RequestBody User user) {
         try {
             User registeredUser = userService.registerUser(user);
@@ -94,5 +113,4 @@ public class Controller {
             return new ResponseEntity<> (User.builder().build(), HttpStatus.BAD_REQUEST);
         }
     }
-
 }

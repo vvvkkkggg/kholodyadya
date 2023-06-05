@@ -24,7 +24,6 @@ public class User {
     @Column(name="user_id")
     private int id;
 
-    @NotNull
     private String username;
 
     @Column(name="first_name")

@@ -7,7 +7,8 @@ import org.vgk.kholodyadya.contoller.Controller;
 import org.vgk.kholodyadya.entity.Product;
 import org.vgk.kholodyadya.entity.ProductRelation;
 import org.vgk.kholodyadya.exceptions.InvalidQrException;
-import org.vgk.kholodyadya.exceptions.NonexistentUserIdException;
+import org.vgk.kholodyadya.exceptions.NonExistentProduct;
+import org.vgk.kholodyadya.exceptions.NonExistentUserIdException;
 import org.vgk.kholodyadya.repository.ProductRelationRepository;
 import org.vgk.kholodyadya.repository.ProductRepository;
 import org.vgk.kholodyadya.repository.UserRepository;
@@ -35,7 +36,7 @@ public class ProductService {
 
     public void addProductsWithinQr(String qr, int userId) {
         if (!userRepository.existsUserById(userId)) {
-            throw new NonexistentUserIdException("user does not exist");
+            throw new NonExistentUserIdException("user does not exist");
         }
 
         boolean isCorrectQr = ValidateQr.validateQr(qr);
@@ -80,5 +81,21 @@ public class ProductService {
         for (Product product : productList) {
             addProduct(product, userId);
         }
+    }
+
+    public void deleteProduct(Product product, int userId) {
+        Optional<Product> foundProduct = productRepository.findByProductName(product.getProductName());
+        if (foundProduct.isEmpty()) {
+            throw new NonExistentProduct("Non existent product name:" + product.getProductName());
+        }
+        ProductRelation relation = ProductRelation.builder()
+                .relationId(new ProductRelation.ProductRelationId(
+                        foundProduct.get().getProductId(), userId
+                ))
+                .build();
+        if (productRelationRepository.findProductRelationByRelationId(relation.getRelationId()).isEmpty()) {
+            throw new NonExistentProduct("Non existent product name:" + product.getProductName());
+        }
+        productRelationRepository.deleteByRelationId(relation.getRelationId());
     }
 }
