@@ -1,1 +1,0 @@
-# Kholo-dyadya-server
