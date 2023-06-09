@@ -29,6 +29,5 @@ public class User {
     @Column(name="first_name")
     private String firstName;
 
-    @NotNull
     private String password;
 }
