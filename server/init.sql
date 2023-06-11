@@ -7,7 +7,8 @@ CREATE TABLE users (
 
 CREATE TABLE products (
                           product_id SERIAL PRIMARY KEY,
-                          product_name VARCHAR(50) NOT NULL
+                          product_name VARCHAR(50) NOT NULL,
+                          category VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE product_relations (

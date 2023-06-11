@@ -56,10 +56,7 @@ public class ProductService {
                 .getAsJsonObject("receipt")
                 .getAsJsonArray("items");
 
-        products.asList().forEach(product -> addProduct(
-                Product.builder().
-                        productName(product.getAsJsonObject().get("game").toString()).build(),
-                userId));
+        products.asList().forEach(product -> addProduct(buildProductFromJson(product.getAsJsonObject()), userId));
     }
 
     public void addProduct(Product product, int userId) {
@@ -97,5 +94,11 @@ public class ProductService {
             throw new NonExistentProduct("Non existent product name:" + product.getProductName());
         }
         productRelationRepository.deleteByRelationId(relation.getRelationId());
+    }
+
+    private Product buildProductFromJson(JsonObject productAsJson) {
+        String name = String.valueOf(productAsJson.get("name"));
+        String category = name.split(" ", 1)[0];
+        return Product.builder().category(category).productName(name).build();
     }
 }

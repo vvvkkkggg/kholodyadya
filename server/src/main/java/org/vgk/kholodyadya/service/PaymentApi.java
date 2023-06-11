@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,6 +20,8 @@ public class PaymentApi {
 
     private boolean haveRelevantSessionId = false;
 
+    @Value("${phone}")
+    private String phoneNumber;
     private final HttpClient client = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
     private final ObjectMapper mapper = new ObjectMapper();
@@ -38,7 +41,7 @@ public class PaymentApi {
     }
 
     private void getSessionId() throws IOException, InterruptedException {
-        String phone = getPhoneNumber();
+        String phone = phoneNumber;
         sendPhoneVerificationRequest(phone);
 
         Scanner input = new Scanner(System.in);
@@ -150,9 +153,5 @@ public class PaymentApi {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return gson.fromJson(response.body(), JsonObject.class);
-    }
-
-    private String getPhoneNumber() {
-        return "";
     }
 }
