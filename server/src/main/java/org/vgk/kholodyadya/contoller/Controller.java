@@ -1,6 +1,10 @@
 package org.vgk.kholodyadya.contoller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.apache.naming.HandlerRef;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -50,9 +54,14 @@ public class Controller {
 
     @PostMapping("/products")
     @Operation(summary = "method to add list of products to user's cart")
-    public void addProducts(@RequestBody List<Product> cart) {
+    public void addProducts(@RequestBody List<ProductRequest> cart) {
         int userId = userService.getAuthenticatedUserId();
-        productService.addProductList(cart, userId);
+
+
+        productService.addProductList(
+                cart.stream().map(Product::new).toList(),
+                userId
+        );
     }
 
     @PostMapping("/products/qr")
@@ -86,6 +95,17 @@ public class Controller {
             return ResponseEntity.ok().build();
         } catch (NonExistentProduct e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PutMapping("/products/category")
+    @Operation(summary = "method to change product category")
+    public ResponseEntity<Product> changeProductCategory(@RequestBody int productId, @RequestBody String category) {
+        try {
+            Product replacedProduct = productService.changeProductCategory(productId, category);
+            return new ResponseEntity<>(replacedProduct, HttpStatus.OK);
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -145,5 +165,14 @@ public class Controller {
         } catch (UserAlreadyExistsException e) {
             return new ResponseEntity<> (User.builder().build(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class ProductRequest {
+        private String productName;
+        private String category;
     }
 }

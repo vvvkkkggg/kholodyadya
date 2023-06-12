@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
+import org.vgk.kholodyadya.contoller.Controller;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +18,6 @@ import java.util.Set;
 @Entity
 @Table(name = "products")
 public class Product {
-
     @Column(name="product_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -26,4 +27,10 @@ public class Product {
     private String productName;
 
     private String category;
+    private String image;
+
+    public Product(Controller.ProductRequest productRequest) {
+        this.productName = productRequest.getProductName();
+        this.category = productRequest.getCategory();
+    }
 }

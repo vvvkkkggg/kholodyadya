@@ -74,6 +74,13 @@ public class ProductService {
                 .toList();
     }
 
+    public Product changeProductCategory(int productId, String category) {
+        Product product = productRepository.getReferenceById(productId);
+        product.setCategory(category);
+        productRepository.save(product);
+        return product;
+    }
+
     public void addProductList(List<Product> productList, int userId) {
         for (Product product : productList) {
             addProduct(product, userId);
