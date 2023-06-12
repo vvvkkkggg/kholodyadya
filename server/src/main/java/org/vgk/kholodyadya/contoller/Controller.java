@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.naming.HandlerRef;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +26,7 @@ import org.vgk.kholodyadya.exceptions.NonExistentGroupException;
 import org.vgk.kholodyadya.exceptions.NonExistentProduct;
 import org.vgk.kholodyadya.exceptions.UserAlreadyExistsException;
 import org.vgk.kholodyadya.service.GroupService;
+import org.vgk.kholodyadya.service.ImageService;
 import org.vgk.kholodyadya.service.ProductService;
 import org.vgk.kholodyadya.service.UserService;
 
@@ -38,15 +38,17 @@ public class Controller {
     private final ProductService productService;
     private final UserService userService;
     private final GroupService groupService;
+    private final ImageService imageService;
     private final AuthenticationManager authenticationManager;
     private final AuthUserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
 
 
-    public Controller(ProductService productService, UserService userService, GroupService groupService, AuthenticationManager authenticationManager, AuthUserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
+    public Controller(ProductService productService, UserService userService, GroupService groupService, ImageService imageService, AuthenticationManager authenticationManager, AuthUserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil) {
         this.productService = productService;
         this.userService = userService;
         this.groupService = groupService;
+        this.imageService = imageService;
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtTokenUtil = jwtTokenUtil;
@@ -54,35 +56,42 @@ public class Controller {
 
     @PostMapping("/products")
     @Operation(summary = "method to add list of products to user's cart")
-    public void addProducts(@RequestBody List<ProductRequest> cart) {
+    public ResponseEntity<List<ProductWithImage>> addProducts(@RequestBody List<Product> cart) {
         int userId = userService.getAuthenticatedUserId();
 
-
-        productService.addProductList(
-                cart.stream().map(Product::new).toList(),
+        List<Product> addedProducts = productService.addProductList(
+                cart,
                 userId
         );
+
+        return new ResponseEntity<>(addedProducts.stream()
+                .map(p -> new ProductWithImage(p, imageService.loadImageOfProduct(p)))
+                .toList(), HttpStatus.OK);
     }
 
     @PostMapping("/products/qr")
     @Operation(summary = "method to add list of products to user's cart within QR code")
-    public ResponseEntity<String> addProductsWithinQr(@RequestBody String qr) {
+    public ResponseEntity<List<ProductWithImage>> addProductsWithinQr(@RequestBody String qr) {
         try {
             int userId = userService.getAuthenticatedUserId();
-            productService.addProductsWithinQr(qr, userId);
-            return new ResponseEntity<>("Products are successfully added", HttpStatus.OK);
+            List<Product> addedProducts = productService.addProductsWithinQr(qr, userId);
+            return new ResponseEntity<>(addedProducts.stream()
+                    .map(p -> new ProductWithImage(p, imageService.loadImageOfProduct(p)))
+                    .toList(), HttpStatus.OK);
         } catch (InvalidQrException exception) {
-            return new ResponseEntity<> ("Given Qr is invalid", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<> (List.of(), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("/products")
     @Operation(summary = "method to get list of user's products")
-    public ResponseEntity<List<Product>> getUserProducts() {
+    public ResponseEntity<List<ProductWithImage>> getUserProducts() {
         int userId = userService.getAuthenticatedUserId();
 
         List<Product> products = productService.getUserProducts(userId);
-        return new ResponseEntity<>(products, HttpStatus.OK);
+        return new ResponseEntity<>(products.stream()
+                .map(p -> new ProductWithImage(p, imageService.loadImageOfProduct(p)))
+                .toList(), HttpStatus.OK);
     }
 
 
@@ -171,8 +180,8 @@ public class Controller {
     @AllArgsConstructor
     @Getter
     @Setter
-    public static class ProductRequest {
-        private String productName;
-        private String category;
+    public static class ProductWithImage {
+        private Product product;
+        private byte[] image;
     }
 }

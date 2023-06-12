@@ -27,10 +27,4 @@ public class Product {
     private String productName;
 
     private String category;
-    private String image;
-
-    public Product(Controller.ProductRequest productRequest) {
-        this.productName = productRequest.getProductName();
-        this.category = productRequest.getCategory();
-    }
 }

@@ -2,6 +2,7 @@ package org.vgk.kholodyadya.service;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.vgk.kholodyadya.contoller.Controller;
 import org.vgk.kholodyadya.entity.Product;
@@ -14,6 +15,7 @@ import org.vgk.kholodyadya.repository.ProductRepository;
 import org.vgk.kholodyadya.repository.UserRepository;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +27,6 @@ public class ProductService {
     private final ProductRelationRepository productRelationRepository;
     private final PaymentApi paymentApi;
 
-
     public ProductService(ProductRepository productRepository, UserRepository userRepository,
                           ProductRelationRepository productRelationRepository, PaymentApi paymentApi) {
         this.productRepository = productRepository;
@@ -34,7 +35,8 @@ public class ProductService {
         this.paymentApi = paymentApi;
     }
 
-    public void addProductsWithinQr(String qr, int userId) {
+    public List<Product> addProductsWithinQr(String qr, int userId) {
+        List<Product> addedProducts = new ArrayList<>();
         if (!userRepository.existsUserById(userId)) {
             throw new NonExistentUserIdException("user does not exist");
         }
@@ -56,13 +58,17 @@ public class ProductService {
                 .getAsJsonObject("receipt")
                 .getAsJsonArray("items");
 
-        products.asList().forEach(product -> addProduct(buildProductFromJson(product.getAsJsonObject()), userId));
+        products.asList().forEach(product -> addedProducts.add(
+                addProduct(buildProductFromJson(product.getAsJsonObject()), userId))
+        );
+        return addedProducts;
     }
 
-    public void addProduct(Product product, int userId) {
+    public Product addProduct(Product product, int userId) {
         Product result = productRepository.save(product);
         productRelationRepository.save(ProductRelation.builder().
                 relationId(new ProductRelation.ProductRelationId(result.getProductId(), userId)).build());
+        return product;
     }
 
     public List<Product> getUserProducts(int userId) {
@@ -81,10 +87,12 @@ public class ProductService {
         return product;
     }
 
-    public void addProductList(List<Product> productList, int userId) {
+    public List<Product> addProductList(List<Product> productList, int userId) {
+        List<Product> addedProducts = new ArrayList<>();
         for (Product product : productList) {
-            addProduct(product, userId);
+            addedProducts.add(addProduct(product, userId));
         }
+        return addedProducts;
     }
 
     public void deleteProduct(Product product, int userId) {
@@ -106,6 +114,9 @@ public class ProductService {
     private Product buildProductFromJson(JsonObject productAsJson) {
         String name = String.valueOf(productAsJson.get("name"));
         String category = name.split(" ", 1)[0];
-        return Product.builder().category(category).productName(name).build();
+        return Product.builder()
+                .category(category)
+                .productName(name)
+                .build();
     }
 }

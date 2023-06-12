@@ -1,4 +1,4 @@
-package org.vgk.kholodyadya;
+ package org.vgk.kholodyadya;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import org.springframework.boot.SpringApplication;
