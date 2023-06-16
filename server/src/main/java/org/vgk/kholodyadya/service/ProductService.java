@@ -112,8 +112,8 @@ public class ProductService {
     }
 
     private Product buildProductFromJson(JsonObject productAsJson) {
-        String name = String.valueOf(productAsJson.get("name"));
-        String category = name.split(" ", 1)[0];
+        String name = String.valueOf(productAsJson.get("name")).split(" ")[0].replace("\"", "");
+        String category = name;
         return Product.builder()
                 .category(category)
                 .productName(name)

@@ -13,14 +13,14 @@ import java.nio.file.Paths;
 @Service
 public class ImageService {
 
-    @Value("images-folder")
-    private static String imagesFolder;
+    @Value("${imagesFolder}")
+    private String imagesFolder;
 
-    @Value("default-image")
-    private static String defaultImage;
+    @Value("${defaultImage}")
+    private String defaultImage;
 
     public byte[] loadImageOfProduct(Product product) {
-        Path pathToImage = Paths.get(imagesFolder, product.getCategory() + ".jpg");
+        Path pathToImage = Paths.get(imagesFolder, product.getCategory().replace("\"", "") + ".png");
         try {
             return Files.readAllBytes(pathToImage);
         } catch (IOException e) {
