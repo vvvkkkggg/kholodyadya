@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +39,11 @@ public class PaymentApi {
     private final String OS = "Android";
 
     public PaymentApi() {
+    }
+
+    @PostConstruct
+    public void init() throws IOException, InterruptedException {
+        getSessionId();
     }
 
     private void getSessionId() throws IOException, InterruptedException {
@@ -77,7 +83,6 @@ public class PaymentApi {
         sessionId = jsonObject.get("sessionId").getAsString();
         refreshToken = jsonObject.get("refresh_token").getAsString();
         haveRelevantSessionId = true;
-
     }
 
     private void sendPhoneVerificationRequest(String phone) throws IOException, InterruptedException {
