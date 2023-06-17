@@ -5,7 +5,9 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -69,7 +71,14 @@ public class QRActivity extends AppCompatActivity {
     private void extractQrCodeInfo(List<Barcode> barcodes) {
         for (Barcode barcode : barcodes) {
             qrTextView.setText(barcode.getRawValue());
+
+
         }
+    }
+
+    public void openMainPage(View view) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     private void pickImageCamera() {

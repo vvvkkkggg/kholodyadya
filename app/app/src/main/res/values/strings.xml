@@ -1,11 +1,12 @@
 <resources>
     <string name="app_name">kholodyadya</string>
-    <string name="your_products">Press and scan!</string>
-    <string name="scan_new">Scan new !</string>
+    <string name="your_products">Сканируйте!</string>
+    <string name="scan_new">Сканировать</string>
     <string name="fridge_bar_button">Fridge Bar Button</string>
     <string name="scan_bar_button">Scan Bar Button</string>
     <string name="profile_bar_button">Profile Bar Button</string>
     <string name="fridgeTitle">Твои продукты</string>
+    <string name="scanPageTitle">Сканирование чека</string>
     <string name="product_image">Изображение продукта</string>
     <string name="due_date">Испортится через</string>
     <string name="product_weight_desc">Количество продуктов в шт или кг</string>
