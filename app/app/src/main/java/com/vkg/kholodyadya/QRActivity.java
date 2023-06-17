@@ -1,4 +1,4 @@
-package com.example.qrapp;
+package com.vkg.kholodyadya;
 
 import android.app.Activity;
 import android.content.ContentValues;
@@ -21,7 +21,7 @@ import com.google.mlkit.vision.common.InputImage;
 import java.io.IOException;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class QRActivity extends AppCompatActivity {
     private ImageView qrImageView;
     private TextView qrTextView;
 
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_qr);
 
         Button scanButton = findViewById(R.id.scanButton);
         qrTextView = findViewById(R.id.qrData);
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                             qrImageView.setImageURI(imageUri);
                         } else {
                             Toast
-                                    .makeText(MainActivity.this, "Cancelled..",
+                                    .makeText(QRActivity.this, "Cancelled..",
                                             Toast.LENGTH_SHORT)
                                     .show();
                         }

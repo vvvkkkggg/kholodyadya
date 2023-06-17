@@ -1,4 +1,4 @@
-package com.example.qrapp;
+package com.example.kholodyadya;
 
 import org.junit.Test;
 

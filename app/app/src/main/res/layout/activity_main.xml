@@ -4,56 +4,109 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
+    android:elevation="100dp"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bar"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:background="@drawable/dummy_bg"
+        android:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/your_products"
-            android:textSize="50sp"
-            style="@style/TextAppearance.MaterialComponents.Headline6"
+        <ImageButton
+            android:id="@+id/fridgeBarButtonSelected"
+            android:layout_width="70dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="35dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/fridge_bar_button"
+            android:src="@drawable/ic_fridge_bar_button_selected"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageButton
+            android:id="@+id/scanBarButton"
+            android:layout_width="70dp"
+            android:layout_height="56dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/scan_bar_button"
+            android:onClick="openQRPage"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/profileBarButton"
+            app:layout_constraintStart_toEndOf="@+id/fridgeBarButtonSelected"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_scan_bar_button" />
 
-        <TextView
-            android:layout_weight="4"
-            android:id="@+id/qrData"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <ImageButton
+            android:id="@+id/profileBarButton"
+            android:layout_width="70dp"
+            android:layout_height="56dp"
+            android:layout_marginEnd="35dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/profile_bar_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_profile_bar_button" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <ImageView
-            android:id="@+id/qrImage"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <TextView
-            android:layout_weight="4"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </LinearLayout>
-
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="80dp"
+        android:background="@drawable/dummy_bg"
+        android:elevation="8dp"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/scanButton"
-            android:layout_gravity="bottom"
-            android:layout_marginEnd="0dp"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/pageTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/scan_new"/>
+            android:layout_marginStart="52dp"
+            android:fontFamily="@font/montserrat"
+            android:text="@string/fridgeTitle"
+            android:textColor="@color/accent"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.51" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </FrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/categoryRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toStartOf="@+id/bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        tools:listitem="@layout/category_item" />
 
+    <GridView
+        android:id="@+id/productGV"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:horizontalSpacing="2dp"
+        android:numColumns="3"
+        android:verticalSpacing="2dp"
+        app:layout_constraintBottom_toTopOf="@+id/bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/categoryRecycler" />
 </androidx.constraintlayout.widget.ConstraintLayout>
