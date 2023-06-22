@@ -29,7 +29,7 @@
                 android:layout_height="70dp"
                 android:contentDescription="@string/product_image"
                 android:transitionName="courseImage"
-                app:srcCompat="@drawable/ic_banana_hardcoded" />
+                app:srcCompat="@drawable/ic_product_banana" />
 
             <TextView
                 android:id="@+id/productName"

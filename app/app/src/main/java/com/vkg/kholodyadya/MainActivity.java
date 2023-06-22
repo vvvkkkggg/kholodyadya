@@ -5,6 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.GridView;
@@ -14,6 +17,7 @@ import com.vkg.kholodyadya.adapters.ProductGVAAdapter;
 import com.vkg.kholodyadya.models.Category;
 import com.vkg.kholodyadya.models.Product;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,30 +51,28 @@ public class MainActivity extends AppCompatActivity {
 
         setCategoryRecycler(categoryList);
 
-/*
-        // TODO: remove hardcode
-        String url = "http://51.250.21.160:8080/";
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .setHeader("X-Our-Header-1", "value1")
-                    .setHeader("X-Our-Header-1", "value2")
-                    .uri(new URI(url)).build();
-        } catch (Exception e) {
 
-        }
- */
 
-        productList.add(new Product(0, "Бананы", "5 дней", R.drawable.ic_banana_hardcoded, 0));
-        productList.add(new Product(1, "Огурцы", "5 дней", R.drawable.ic_banana_hardcoded, 0));
-        productList.add(new Product(2, "Кабачки", "5 дней", R.drawable.ic_banana_hardcoded, 0));
-        productList.add(new Product(3, "Баклажаны", "5 дней", R.drawable.ic_banana_hardcoded, 0));
-        productList.add(new Product(4, "Макароны", "5 дней", R.drawable.ic_banana_hardcoded, 0));
-        productList.add(new Product(5, "Пицца", "5 дней", R.drawable.ic_banana_hardcoded, 0));
-        productList.add(new Product(6, "Бургер", "5 дней", R.drawable.ic_banana_hardcoded, 0));
+        APIWrapper wrapper = new APIWrapper(this.getString(R.string.test_token), this.getString(R.string.server_url));
+        productList.clear();
+        productList.addAll(wrapper.getProducts());
+//        for (int i = 0; i < productList.size(); i++) {
+//            productList.get(i).setLocalId(i);
+//        }
+//        ArrayList <Product> kekList = new ArrayList<>();
+//        productList.add(new Product(0, "Бананы", "5 дней", R.drawable.ic_banana_hardcoded, ""));
+//        productList.add(new Product(1, "Огурцы", "5 дней", R.drawable.ic_banana_hardcoded, ""));
+//        productList.add(new Product(2, "Кабачки", "5 дней", R.drawable.ic_banana_hardcoded, ""));
+//        productList.add(new Product(3, "Баклажаны", "5 дней", R.drawable.ic_banana_hardcoded, ""));
+//        productList.add(new Product(4, "Макароны", "5 дней", R.drawable.ic_banana_hardcoded, ""));
+//        productList.add(new Product(5, "Пицца", "5 дней", R.drawable.ic_banana_hardcoded, ""));
+//        productList.add(new Product(6, "Бургер", "5 дней", R.drawable.ic_banana_hardcoded, ""));
 
 
         setProductGV(productList);
     }
+
+
 
     private void setCategoryRecycler(List<Category> categoryList) {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.HORIZONTAL, false);

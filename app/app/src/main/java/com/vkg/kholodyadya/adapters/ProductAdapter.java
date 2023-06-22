@@ -1,16 +1,10 @@
 package com.vkg.kholodyadya.adapters;
 
-import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,12 +16,12 @@ import com.vkg.kholodyadya.models.Product;
 
 import java.util.List;
 
-public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.CourseViewHolder> {
 
     Context context;
     List<Product> productList;
 
-    public CourseAdapter(Context context, List<Product> courses) {
+    public ProductAdapter(Context context, List<Product> courses) {
         this.context = context;
         this.productList = productList;
     }
@@ -36,7 +30,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     @Override
     public CourseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View courseItems = LayoutInflater.from(context).inflate(R.layout.product_item, parent, false);
-        return new CourseAdapter.CourseViewHolder(courseItems);
+        return new ProductAdapter.CourseViewHolder(courseItems);
     }
 
     @Override
