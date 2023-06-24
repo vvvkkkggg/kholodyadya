@@ -37,8 +37,7 @@ public class ProductGVAAdapter extends ArrayAdapter<Product> {
         ImageView productIV = listitemView.findViewById(R.id.productImage);
 
         productTV.setText((product.getTitle()));
-//        productIV.setImageResource(product.getImgid());
-        productIV.setImageDrawable(product.drawable);
+        productIV.setImageResource(product.getImgid());
         return listitemView;
     }
 }

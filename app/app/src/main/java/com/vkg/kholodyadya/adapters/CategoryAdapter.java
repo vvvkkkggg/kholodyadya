@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.vkg.kholodyadya.MainActivity;
 import com.vkg.kholodyadya.R;
 import com.vkg.kholodyadya.models.Category;
 import com.google.android.material.chip.Chip;
@@ -36,14 +37,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         holder.categoryChip.setText(categories.get(position).getTitle());
 
-        /*
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.categoryChip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.showCoursesByCategory(categories.get(holder.getAdapterPosition()).getId());
+                MainActivity.showProductsByCategory(categories.get(holder.getAdapterPosition()).getTitle());
             }
         });
-        */
     }
 
     @Override

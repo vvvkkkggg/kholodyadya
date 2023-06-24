@@ -35,6 +35,9 @@ public class MainActivity extends AppCompatActivity {
     GridView productGV;
 
     static List<Product> productList = new ArrayList<>();
+    static List<Product> fullProductList = new ArrayList<>();
+    static ProductRepository repo = new ProductRepository();
+    static ProductGVAAdapter productGVAAdapter;
 
     CategoryAdapter categoryAdapter;
 
@@ -44,18 +47,26 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         List<Category> categoryList = new ArrayList<>();
-        categoryList.add(new Category(1, "Фрукты"));
-        categoryList.add(new Category(2, "Овощи"));
-        categoryList.add(new Category(3, "Мясо"));
-        categoryList.add(new Category(4, "Скоро испортится"));
+        categoryList.add(new Category(1, "Всё"));
+        categoryList.add(new Category(2, "Фрукты"));
+        categoryList.add(new Category(3, "Овощи"));
+        categoryList.add(new Category(4, "Мясо"));
+        categoryList.add(new Category(5, "Скоро испортится"));
 
         setCategoryRecycler(categoryList);
 
 
 
         APIWrapper wrapper = new APIWrapper(this.getString(R.string.test_token), this.getString(R.string.server_url));
-        productList.clear();
-        productList.addAll(wrapper.getProducts());
+        fullProductList.clear();
+        fullProductList.addAll(wrapper.getProducts());
+
+        for (int i = 0; i < fullProductList.size(); i++) {
+            Product p = fullProductList.get(i);
+            p.setLocalId(i);
+            p.setImgid(repo.getProductImageId(p));
+            p.setCategory(repo.getProductCategory(p));
+        }
 //        for (int i = 0; i < productList.size(); i++) {
 //            productList.get(i).setLocalId(i);
 //        }
@@ -67,7 +78,8 @@ public class MainActivity extends AppCompatActivity {
 //        productList.add(new Product(4, "Макароны", "5 дней", R.drawable.ic_banana_hardcoded, ""));
 //        productList.add(new Product(5, "Пицца", "5 дней", R.drawable.ic_banana_hardcoded, ""));
 //        productList.add(new Product(6, "Бургер", "5 дней", R.drawable.ic_banana_hardcoded, ""));
-
+        productList.clear();
+        productList.addAll(fullProductList);
 
         setProductGV(productList);
     }
@@ -92,7 +104,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void setProductGV(List<Product> productList) {
         productGV = findViewById(R.id.productGV);
-        ProductGVAAdapter adapter = new ProductGVAAdapter(this, productList);
-        productGV.setAdapter(adapter);
+        productGVAAdapter = new ProductGVAAdapter(this, productList);
+        productGV.setAdapter(productGVAAdapter);
+    }
+
+    public static void showProductsByCategory(String category) {
+        if (category == "Всё") {
+            productList.clear();
+            productList.addAll(fullProductList);
+            productGVAAdapter.notifyDataSetChanged();
+            return;
+        }
+
+        List<Product> filterProducts = new ArrayList<>();
+        for (Product c : fullProductList) {
+            if (c.getCategory() == category) {
+                filterProducts.add(c);
+            }
+        }
+
+        productList.clear();
+        productList.addAll(filterProducts);
+
+        productGVAAdapter.notifyDataSetChanged();
     }
 }

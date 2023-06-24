@@ -11,6 +11,7 @@
     <string name="due_date">Испортится через</string>
     <string name="product_weight_desc">Количество продуктов в шт или кг</string>
     <string name="product_weight">Количество</string>
-    <string name="test_token">eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGV4ZXkiLCJpYXQiOjE2ODc5OTE4MTgsImV4cCI6MTY4ODAwOTgxOH0.TjWquAwOzmcBXauelwpyyFVtaucKX1IfwF7zgYMsBu4</string>
+    <string name="test_token">eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGV4ZXkiLCJpYXQiOjE2ODc5OTY4NDcsImV4cCI6MTY4ODAxNDg0N30.SzVVMAh0nP9JOXaUAFGUjP0BevFxdgPZDEbN26oHt8c</string>
     <string name="server_url">http://51.250.21.160:8080</string>
+    <string name="category_beverage">beverage</string>
 </resources>

@@ -8,7 +8,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/productCard"
-        android:layout_width="106dp"
+        android:layout_width="123dp"
         android:layout_height="wrap_content"
         app:cardCornerRadius="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -27,6 +27,7 @@
                 android:id="@+id/productImage"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:layout_margin="10dp"
                 android:contentDescription="@string/product_image"
                 android:transitionName="courseImage"
                 app:srcCompat="@drawable/ic_product_banana" />
