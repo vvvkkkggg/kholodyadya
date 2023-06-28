@@ -35,7 +35,7 @@ public class ProductService {
         this.paymentApi = paymentApi;
     }
 
-    public List<Product> addProductsWithinQr(String qr, int userId) {
+    public List<Product> addProductsWithinQr(String qr, int userId) throws NonExistentUserIdException, InvalidQrException {
         List<Product> addedProducts = new ArrayList<>();
         if (!userRepository.existsUserById(userId)) {
             throw new NonExistentUserIdException("user does not exist");
@@ -95,7 +95,7 @@ public class ProductService {
         return addedProducts;
     }
 
-    public void deleteProduct(Product product, int userId) {
+    public void deleteProduct(Product product, int userId) throws NonExistentProduct {
         Optional<Product> foundProduct = productRepository.findByProductName(product.getProductName());
         if (foundProduct.isEmpty()) {
             throw new NonExistentProduct("Non existent product name:" + product.getProductName());
@@ -112,7 +112,9 @@ public class ProductService {
     }
 
     private Product buildProductFromJson(JsonObject productAsJson) {
-        String name = String.valueOf(productAsJson.get("name")).split(" ")[0].replace("\"", "");
+        String name = String.valueOf(productAsJson.get("name"))
+                .split(" ")[0]
+                .replace("\"", "");
         String category = name;
         return Product.builder()
                 .category(category)

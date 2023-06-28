@@ -30,7 +30,7 @@ public class UserService {
         return userRepository.existsUserByUsername(username);
     }
 
-    public User registerUser(User user) {
+    public User registerUser(User user) throws UserAlreadyExistsException {
         if (checkUserExists(user.getUsername())) {
             throw new UserAlreadyExistsException("user " + user.getUsername() + " already exists");
         }

@@ -43,7 +43,7 @@ public class GroupService {
                 .toList();
     }
 
-    public boolean addInGroup(int groupId, int adminUserId, String usernameToAdd) {
+    public boolean addInGroup(int groupId, int adminUserId, String usernameToAdd) throws InsufficientPermissions, NonExistentGroupException, NonExistentUserIdException {
         Optional<GroupRelation> adminRelation = groupRelationRepository.findByRelationId(
                 new GroupRelation.GroupRelationId(groupId, adminUserId)
         );

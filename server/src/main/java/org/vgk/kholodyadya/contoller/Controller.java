@@ -21,10 +21,7 @@ import org.vgk.kholodyadya.config.JwtTokenUtil;
 import org.vgk.kholodyadya.entity.Group;
 import org.vgk.kholodyadya.entity.Product;
 import org.vgk.kholodyadya.entity.User;
-import org.vgk.kholodyadya.exceptions.InvalidQrException;
-import org.vgk.kholodyadya.exceptions.NonExistentGroupException;
-import org.vgk.kholodyadya.exceptions.NonExistentProduct;
-import org.vgk.kholodyadya.exceptions.UserAlreadyExistsException;
+import org.vgk.kholodyadya.exceptions.*;
 import org.vgk.kholodyadya.service.GroupService;
 import org.vgk.kholodyadya.service.ImageService;
 import org.vgk.kholodyadya.service.ProductService;
@@ -78,8 +75,8 @@ public class Controller {
             return new ResponseEntity<>(addedProducts.stream()
                     .map(p -> new ProductWithImage(p, imageService.loadImageOfProduct(p)))
                     .toList(), HttpStatus.OK);
-        } catch (InvalidQrException exception) {
-            return new ResponseEntity<> (List.of(), HttpStatus.BAD_REQUEST);
+        } catch (InvalidQrException | NonExistentUserIdException exception) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -133,7 +130,7 @@ public class Controller {
         try {
             groupService.addInGroup(groupId, userId, username);
             return ResponseEntity.ok().build();
-        } catch (NonExistentGroupException exception) {
+        } catch (NonExistentGroupException | NonExistentUserIdException | InsufficientPermissions exception) {
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }

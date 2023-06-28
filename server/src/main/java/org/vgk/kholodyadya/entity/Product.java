@@ -27,4 +27,6 @@ public class Product {
     private String productName;
 
     private String category;
+    @Column(name="shelf_life")
+    private String shelfLife;
 }
