@@ -111,11 +111,11 @@ public class APIWrapper {
         }
     }
 
-    public void deleteProduct(Product product) {
+    public void deleteProduct(int productID, String productName, String productCategory) {
         RequestBody body = new FormBody.Builder()
-                .add("productId", Integer.valueOf(product.getProductId()).toString())
-                .add("productName", product.getTitle())
-                .add("category", product.getCategory())
+                .add("productId", String.valueOf(productID))
+                .add("productName", productName)
+                .add("category", productCategory)
                 .build();
 
         Request request = new Request.Builder()

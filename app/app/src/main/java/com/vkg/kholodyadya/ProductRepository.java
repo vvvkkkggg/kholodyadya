@@ -99,4 +99,17 @@ public class ProductRepository {
     public String getProductCategory(Product product) {
         return repo.get(product.getTitle()).getCategory();
     }
+
+    public int getProductCalories(Product product) {
+        return repo.get(product.getTitle()).getCalories();
+    }
+    public int getProductProteins(Product product) {
+        return repo.get(product.getTitle()).getProtein();
+    }
+    public int getProductFats(Product product) {
+        return repo.get(product.getTitle()).getFat();
+    }
+    public int getProductCarbons(Product product) {
+        return repo.get(product.getTitle()).getCarbon();
+    }
 }

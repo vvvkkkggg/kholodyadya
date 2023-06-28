@@ -73,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="52dp"
-            android:fontFamily="@font/montserrat"
+            android:fontFamily="@font/montserrat_bold"
             android:text="@string/fridgeTitle"
             android:textColor="@color/accent"
             android:textSize="20sp"

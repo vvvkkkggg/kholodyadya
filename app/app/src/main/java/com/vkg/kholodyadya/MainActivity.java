@@ -102,9 +102,25 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public static void removeById(int productId) {
+        for (int i = 0; i < fullProductList.size(); i++) {
+            if (productList.get(productId).getProductId() == productId) {
+                fullProductList.remove(i);
+                break;
+            }
+        }
+        for (int i = 0; i < productList.size(); i++) {
+            if (productList.get(productId).getProductId() == productId) {
+                productList.remove(i);
+                break;
+            }
+        }
+        productGVAAdapter.notifyDataSetChanged();
+    }
+
     private void setProductGV(List<Product> productList) {
         productGV = findViewById(R.id.productGV);
-        productGVAAdapter = new ProductGVAAdapter(this, productList);
+        productGVAAdapter = new ProductGVAAdapter(this, productList, repo);
         productGV.setAdapter(productGVAAdapter);
     }
 
